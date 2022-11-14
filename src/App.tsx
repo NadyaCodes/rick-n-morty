@@ -33,6 +33,7 @@
 import React from "react";
 // @ts-ignore
 import { Store } from "./Store.tsx";
+import { IAction, IEpisode } from "./interfaces";
 
 // https://api.tvmaze.com/singlesearch/shows?q=rick-&-morty&embed=episodes
 
@@ -54,17 +55,51 @@ export default function App(): JSX.Element {
     });
   };
 
+  const toggleFavAction = (episode: IEpisode): IAction => {
+    const episodeInFav = state.favourites.includes(episode);
+    let dispatchObj = {
+      type: "ADD_FAV",
+      payload: episode,
+    };
+
+    if (episodeInFav) {
+      const favWithoutEpisode = state.favourites.filter(
+        (fav: IEpisode) => fav.id !== episode.id
+      );
+      dispatchObj = {
+        type: "REMOVE_FAV",
+        payload: favWithoutEpisode,
+      };
+    }
+    return dispatch(dispatchObj);
+  };
+
   return (
     <React.Fragment>
-      <h1>Rick and Morty</h1>
-      <p>Pick your favourite episode!!!</p>
-      <section>
-        {state.episodes.map((episode: any) => {
+      <header className="header">
+        <div>
+          <h1>Rick and Morty</h1>
+          <p>Pick your favourite episode!!!</p>
+        </div>
+        <div>Favourite(s): {state.favourites.length}</div>
+      </header>
+      <section className="episode-layout">
+        {state.episodes.map((episode: IEpisode) => {
           return (
-            <section key={episode.id}>
+            <section key={episode.id} className="episode-box">
               <div>{episode.name}</div>
               <section>
-                Season: {episode.season} Number: {episode.number}
+                <div>
+                  Season: {episode.season} Number: {episode.number}
+                </div>
+                <button type="button" onClick={() => toggleFavAction(episode)}>
+                  {state.favourites.includes(episode) ? "unFav" : "Fav"}
+                  {/* {state.favourites.find(
+                    (fav: IEpisode) => fav.id === episode.id
+                  )
+                    ? "unFav"
+                    : "Fav"} */}
+                </button>
               </section>
             </section>
           );
