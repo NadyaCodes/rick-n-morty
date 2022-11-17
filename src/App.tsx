@@ -35,10 +35,14 @@ import React from "react";
 import { Store } from "./Store.tsx";
 import { IAction, IEpisode } from "./interfaces";
 
+// @ts-ignore
+const EpisodeList = React.lazy<any>(() => import("./EpisodesList.tsx"));
+
 // https://api.tvmaze.com/singlesearch/shows?q=rick-&-morty&embed=episodes
 
 export default function App(): JSX.Element {
   const { state, dispatch } = React.useContext(Store);
+
   React.useEffect(() => {
     state.episodes.length === 0 && fetchDataAction();
   });
@@ -74,6 +78,12 @@ export default function App(): JSX.Element {
     return dispatch(dispatchObj);
   };
 
+  const props = {
+    episodes: state.episodes,
+    toggleFavAction,
+    favourites: state.favourites,
+  };
+
   return (
     <React.Fragment>
       <header className="header">
@@ -83,28 +93,11 @@ export default function App(): JSX.Element {
         </div>
         <div>Favourite(s): {state.favourites.length}</div>
       </header>
-      <section className="episode-layout">
-        {state.episodes.map((episode: IEpisode) => {
-          return (
-            <section key={episode.id} className="episode-box">
-              <div>{episode.name}</div>
-              <section>
-                <div>
-                  Season: {episode.season} Number: {episode.number}
-                </div>
-                <button type="button" onClick={() => toggleFavAction(episode)}>
-                  {state.favourites.includes(episode) ? "unFav" : "Fav"}
-                  {/* {state.favourites.find(
-                    (fav: IEpisode) => fav.id === episode.id
-                  )
-                    ? "unFav"
-                    : "Fav"} */}
-                </button>
-              </section>
-            </section>
-          );
-        })}
-      </section>
+      <React.Suspense fallback={<div>loading...</div>}>
+        <section className="episode-layout">
+          <EpisodeList {...props} />
+        </section>
+      </React.Suspense>
     </React.Fragment>
   );
 }
