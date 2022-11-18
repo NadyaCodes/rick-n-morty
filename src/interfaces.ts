@@ -13,7 +13,7 @@ export interface IEpisode {
   airstamp: string;
   airtime: string;
   id: number;
-  image: null;
+  image: { medium: string };
   name: string;
   number: number;
   rating: { average: null };
@@ -22,4 +22,10 @@ export interface IEpisode {
   summary: string;
   type: string;
   url: string;
+}
+
+export interface IEpisodeProps {
+  episodes: Array<IEpisode>;
+  toggleFavAction: (episode: IEpisode) => IAction;
+  favourites: Array<IEpisode>;
 }

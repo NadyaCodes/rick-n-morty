@@ -6,6 +6,7 @@ export default function EpisodesList(props: any): JSX.Element[] {
   return episodes.map((episode: IEpisode) => {
     return (
       <section key={episode.id} className="episode-box">
+        <img src={episode.image.medium} alt={`Rick and Mort ${episode.name}`} />
         <div>{episode.name}</div>
         <section style={{ display: "flex", justifyContent: "space-between" }}>
           <div>
